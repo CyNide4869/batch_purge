@@ -42,8 +42,8 @@ def remove(mkv, tracks, choice):
 	print('\nRemoving Tracks:')
 	for track in tracks:
 		try:
-			if (choice == 1) and ((track.language != 'jpn' and track.language != 'und' and track.track_type == 'audio') or \
-				(track.language != 'eng' and track.language != 'und' and track.track_type == 'subtitles') or \
+			if (choice == 1) and ((track.track_type == 'audio' and track.language not in ['jpn', 'und']) or \
+				(track.track_type == 'subtitles' and track.language not in ['eng', 'und']) or \
 				('sign' in track.track_name.lower()) or ('eng' in track.track_name.lower() and track.track_type != 'subtitles')):
 
 				TID = track.track_id
