@@ -22,24 +22,30 @@ def demux(mkv, mkvfile, count):
 		print('No Tracks To Remove')
 
 
-def display_track(track, i):
+def display_track(track, i, err=''):
 	'''Displays the tracks for a given mkvfile'''
 
-	print('{0:02d}: TRACK NAME: {1}, TRACK TYPE: {2}, TRACK LANGUAGE: {3}'.format(i, track.track_name, track.track_type, track.language))
+	if err != '':
+		print('{:<3} {:<10} {:<10} {:<25} {:<25}'.format(i, track.track_type, track.language, str(track.track_name), err))
+	else:
+		print('{:<3} {:<10} {:<10} {:<25}'.format(i, track.track_type, track.language, str(track.track_name)))
 
 
 def remove(mkv, tracks, choice):
 	'''Chooses the tracks to remove from the mkvfile'''
 
 	print('\nTracks Present:')
+	print('\n{:<3} {:<10} {:<10} {}\n----------------------------------------------'.format('ID', 'Type', 'Language', 'Name'))
 
 	for i, track in enumerate(tracks, 1):
 		display_track(track, i)
 
 	count = 0
 	TID = 0
+	errors = []
 
 	print('\nRemoving Tracks:')
+	print('\n{:<3} {:<10} {:<10} {}\n----------------------------------------------'.format('ID', 'Type', 'Language', 'Name'))
 	for track in tracks:
 		try:
 			if (choice == 1) and ((track.track_type == 'audio' and track.language not in ['jpn', 'und']) or \
@@ -56,12 +62,19 @@ def remove(mkv, tracks, choice):
 				continue
 
 		except Exception as e:
-			print('{0:02d}: ERROR:'.format(TID + 1), e, ', SKIPPING TRACK')
+			errors.append((track, e))
 			continue
 
 		mkv.move_track_front(TID)
 		count += 1
 		display_track(track, TID + 1)
+
+	if errors:
+		print('\nErrors while parsing, these tracks were skipped from being purged')
+		print('\n{:<3} {:<10} {:<10} {:<25} {}\n----------------------------------------------'.format('ID', 'Type', 'Language', 'Name', 'Err Msg'))
+		for track, error in errors:
+			display_track(track, track.track_id + 1, err=str(error))
+
 
 	return count		
 
@@ -76,8 +89,9 @@ def main():
 		exit(0)
 
 	for mkvfile in mkvfiles:
-		print('-----------------------------------------')
-		print('\nWorking File: ', mkvfile.name, end='\n\n')
+		print('\n\n----------------------------------------------')
+		print('Working File: ', mkvfile.name, end='\n')
+		print('----------------------------------------------')
 
 		try:
 			mkv = pymkv.MKVFile(mkvfile)
@@ -96,3 +110,4 @@ def main():
 
 if __name__ == '__main__':
 	main()
+	
