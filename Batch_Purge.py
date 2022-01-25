@@ -28,6 +28,7 @@ def display_track(track, i, err=''):
 	if err != '':
 		print('{:<3} {:<10} {:<10} {:<25} {:<25}'.format(i, track.track_type, track.language, str(track.track_name), err))
 	else:
+
 		print('{:<3} {:<10} {:<10} {:<25}'.format(i, track.track_type, track.language, str(track.track_name)))
 
 
@@ -48,26 +49,25 @@ def remove(mkv, tracks, choice):
 	print('\n{:<3} {:<10} {:<10} {}\n----------------------------------------------'.format('ID', 'Type', 'Language', 'Name'))
 	for track in tracks:
 		try:
-			if (choice == 1) and ((track.track_type == 'audio' and track.language not in ['jpn', 'und']) or \
+			if ('1' in choice) and ((track.track_type == 'audio' and track.language not in ['jpn', 'und']) or \
 				(track.track_type == 'subtitles' and track.language not in ['eng', 'und']) or \
 				('sign' in track.track_name.lower()) or ('eng' in track.track_name.lower() and track.track_type != 'subtitles')):
 
 				TID = track.track_id
-				
+				mkv.move_track_front(TID)
+				count += 1
+				display_track(track, TID + 1)
 
-			elif (choice == 2) and ('commentary' in track.track_name):
+
+			if ('2' in choice) and ('commentary' in track.track_name):
 				TID = track.track_id
-
-			else:
-				continue
+				mkv.move_track_front(TID)
+				count += 1
+				display_track(track, TID + 1)
 
 		except Exception as e:
 			errors.append((track, e))
 			continue
-
-		mkv.move_track_front(TID)
-		count += 1
-		display_track(track, TID + 1)
 
 	if errors:
 		print('\nErrors while parsing, these tracks were skipped from being purged')
@@ -83,9 +83,9 @@ def main():
 	create_folder()
 	mkvfiles = sorted([item for item in current_directory.iterdir() if item.suffix == '.mkv' and not item.is_dir()])
 
-	choice = int(input('1) Remove Only Dub\n2) Remove Only Commentary\nChoice: '))
+	choice = input('1) Remove Only Dub\n2) Remove Only Commentary\nChoice: ')
 
-	if choice not in  [1, 2]:
+	if choice not in  ['1', '2', '21', '12']:
 		exit(0)
 
 	for mkvfile in mkvfiles:
