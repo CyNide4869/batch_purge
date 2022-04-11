@@ -22,6 +22,7 @@ def demux(mkv, mkvfile, count):
 		print('No Tracks To Remove')
 
 
+
 def display_track(track, i, err=''):
 	'''Displays the tracks for a given mkvfile'''
 
@@ -82,6 +83,15 @@ def remove(mkv, tracks, choice):
 def main():
 	create_folder()
 	mkvfiles = sorted([item for item in current_directory.iterdir() if item.suffix == '.mkv' and not item.is_dir()])
+
+	print('\n\n----------------------------------------------')
+	print("Found the following files")
+	print('----------------------------------------------')
+	for i, mkvfile in enumerate(mkvfiles, 1):
+		print(f"{i}) {mkvfile.name}",end="\n")
+	print('----------------------------------------------\n\n')
+		
+
 
 	choice = input('1) Remove Only Dub\n2) Remove Only Commentary\nChoice: ')
 
