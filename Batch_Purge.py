@@ -1,6 +1,7 @@
 # Purges tracks based on user input
 from pathlib import Path
 import pymkv
+import shutil
 
 current_directory = (Path.cwd()).resolve()
 output_directory = (current_directory / 'output').resolve()
@@ -20,6 +21,7 @@ def demux(mkv, mkvfile, count):
 		mkv.mux(output_directory / mkvfile, silent=True)
 	else:
 		print('No Tracks To Remove')
+		shutil.move(mkvfile,output_directory)
 
 
 
