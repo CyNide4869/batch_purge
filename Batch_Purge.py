@@ -5,6 +5,7 @@ import shutil
 
 current_directory = (Path.cwd()).resolve()
 output_directory = (current_directory / 'output').resolve()
+moved = []
 
 def create_folder():
 	'''Creates the output folder if it doesn't already exist'''
@@ -22,6 +23,7 @@ def demux(mkv, mkvfile, count):
 	else:
 		print('No Tracks To Remove')
 		shutil.move(mkvfile,output_directory)
+		moved.append(mkvfile)
 
 
 
@@ -118,6 +120,14 @@ def main():
 		demux(mkv, mkvfile.name, count)
 
 	print('\nDone')
+
+
+	print('\n\n----------------------------------------------')
+	print("The following files were moved to the output folder as they did not have any tracks that needed to be purged")
+	print('----------------------------------------------')
+	for i, mkvfile in enumerate(mkvfiles, 1):
+		print(f"{i}) {mkvfile.name}",end="\n")
+	print('----------------------------------------------\n\n')
 
 
 if __name__ == '__main__':
