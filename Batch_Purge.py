@@ -1,9 +1,11 @@
 # Purges tracks based on user input
 from pathlib import Path
 import pymkv
+import shutil
 
 current_directory = (Path.cwd()).resolve()
 output_directory = (current_directory / 'output').resolve()
+moved = []
 
 def create_folder():
 	'''Creates the output folder if it doesn't already exist'''
@@ -20,6 +22,9 @@ def demux(mkv, mkvfile, count):
 		mkv.mux(output_directory / mkvfile, silent=True)
 	else:
 		print('No Tracks To Remove')
+		shutil.move(mkvfile , output_directory)
+		moved.append(mkvfile)
+
 
 
 def display_track(track, i, err=''):
@@ -83,6 +88,15 @@ def main():
 	create_folder()
 	mkvfiles = sorted([item for item in current_directory.iterdir() if item.suffix == '.mkv' and not item.is_dir()])
 
+	print('\n\n----------------------------------------------')
+	print("Found the following files")
+	print('----------------------------------------------')
+	for i, mkvfile in enumerate(mkvfiles, 1):
+		print(f"{i}) {mkvfile.name}", end="\n")
+	print('----------------------------------------------\n\n')
+		
+
+
 	choice = input('1) Remove Only Dub\n2) Remove Only Commentary\nChoice: ')
 
 	if choice not in  ['1', '2', '21', '12']:
@@ -106,6 +120,14 @@ def main():
 		demux(mkv, mkvfile.name, count)
 
 	print('\nDone')
+
+
+	print('\n\n----------------------------------------------')
+	print("The following files were moved to the output folder as they did not have any tracks that needed to be purged")
+	print('----------------------------------------------')
+	for i, mkvfile in enumerate(mkvfiles, 1):
+		print(f"{i}) {mkvfile.name}", end="\n")
+	print('----------------------------------------------\n\n')
 
 
 if __name__ == '__main__':
