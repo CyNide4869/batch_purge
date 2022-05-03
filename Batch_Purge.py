@@ -43,13 +43,13 @@ def remove(mkv, tracks, choice):
 	print('\n')
 
 	count = 0
-	TID = 0
+	TID = -1
 	errors = []
 
 	print('\nRemoving Tracks:')
 	print('\n{:<3} {:<10} {:<10} {}\n----------------------------------------------'.format('ID', 'Type', 'Language', 'Name'))
 	for track in tracks:
-		TID = 0
+		TID = -1
 		try:
 			if ('1' in choice) and ((track.track_type == 'audio' and track.language not in ['jpn', 'und']) or \
 				(track.track_type == 'subtitles' and track.language not in ['eng', 'und', 'jpn']) or \
@@ -61,7 +61,7 @@ def remove(mkv, tracks, choice):
 			if ('2' in choice) and ('commentary' in track.track_name):
 				TID = track.track_id
 
-			if TID:
+			if TID != -1:
 				count += 1
 				display_track(track, TID + 1)
 				mkv.move_track_front(TID)
