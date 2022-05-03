@@ -40,6 +40,7 @@ def remove(mkv, tracks, choice):
 
 	for i, track in enumerate(tracks, 1):
 		display_track(track, i)
+	print('\n')
 
 	count = 0
 	TID = 0
@@ -48,22 +49,22 @@ def remove(mkv, tracks, choice):
 	print('\nRemoving Tracks:')
 	print('\n{:<3} {:<10} {:<10} {}\n----------------------------------------------'.format('ID', 'Type', 'Language', 'Name'))
 	for track in tracks:
+		TID = 0
 		try:
 			if ('1' in choice) and ((track.track_type == 'audio' and track.language not in ['jpn', 'und']) or \
-				(track.track_type == 'subtitles' and track.language not in ['eng', 'und']) or \
-				('sign' in track.track_name.lower()) or ('eng' in track.track_name.lower() and track.track_type != 'subtitles')):
+				(track.track_type == 'subtitles' and track.language not in ['eng', 'und', 'jpn']) or \
+				('sign' in track.track_name.lower()) or ('eng' in track.track_name.lower() and track.track_type == 'audio')):
 
 				TID = track.track_id
-				mkv.move_track_front(TID)
-				count += 1
-				display_track(track, TID + 1)
 
 
 			if ('2' in choice) and ('commentary' in track.track_name):
 				TID = track.track_id
-				mkv.move_track_front(TID)
+
+			if TID:
 				count += 1
 				display_track(track, TID + 1)
+				mkv.move_track_front(TID)
 
 		except Exception as e:
 			errors.append((track, e))
@@ -83,14 +84,18 @@ def main():
 	create_folder()
 	mkvfiles = sorted([item for item in current_directory.iterdir() if item.suffix == '.mkv' and not item.is_dir()])
 
+	print('Listing all the files:')
+	for i, mkvfile in enumerate(mkvfiles, 1):
+		print('{:<2} - {}'.format(i, mkvfile.name))
+
 	choice = input('1) Remove Only Dub\n2) Remove Only Commentary\nChoice: ')
 
 	if choice not in  ['1', '2', '21', '12']:
 		exit(0)
 
-	for mkvfile in mkvfiles:
+	for i, mkvfile in enumerate(mkvfiles, 1):
 		print('\n\n----------------------------------------------')
-		print('Working File: ', mkvfile.name, end='\n')
+		print('{:<3} Working File: '.format(i), mkvfile.name, end='\n')
 		print('----------------------------------------------')
 
 		try:
